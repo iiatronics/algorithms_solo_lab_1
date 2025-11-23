@@ -11,12 +11,12 @@ void show_step_by_step(string word1, const string& word2, const vector<Op>& ops)
 
     cout << "\n=== Step by step transformation ===\n";
 
-    int offset = 0; // зміщення індексів відносно оригіналу word1
+    int offset = 0; 
 
     for (size_t k = 0; k < ops.size(); ++k)
     {
         const Op& op = ops[k];
-        int adjusted_pos = op.pos + offset; // скоригована позиція у поточному слові
+        int adjusted_pos = op.pos + offset; 
 
         cout << "Before:   " << cur << "\n";
 
@@ -33,7 +33,7 @@ void show_step_by_step(string word1, const string& word2, const vector<Op>& ops)
             {
                 cout << "Operation: SUBSTITUTE (invalid pos " << adjusted_pos << ")\n";
             }
-            // offset не змінюється
+
         }
         else if (op.type == 'D')
         {
@@ -41,7 +41,7 @@ void show_step_by_step(string word1, const string& word2, const vector<Op>& ops)
             {
                 cout << "Operation: DELETE '" << op.from << "' at pos " << adjusted_pos << "\n";
                 cur.erase(adjusted_pos, 1);
-                offset -= 1; // після видалення індекси зсуваються вліво
+                offset -= 1; 
             }
             else
             {
@@ -50,12 +50,12 @@ void show_step_by_step(string word1, const string& word2, const vector<Op>& ops)
         }
         else if (op.type == 'I')
         {
-            // вставка в позицію adjusted_pos (0..size)
+            
             if (adjusted_pos >= 0 && adjusted_pos <= (int)cur.size())
             {
                 cout << "Operation: INSERT '" << op.to << "' at pos " << adjusted_pos << "\n";
                 cur.insert(adjusted_pos, 1, op.to);
-                offset += 1; // після вставки індекси зсуваються вправо
+                offset += 1; 
             }
             else
             {
@@ -77,14 +77,13 @@ vector<Op> backtrace_ops(const string& word1, const string& word2, const vector<
 {
     int i = (int)word1.size();
     int j = (int)word2.size();
-    vector<Op> ops_rev; // operations in reverse order (from end to start)
+    vector<Op> ops_rev; 
 
     while (i > 0 || j > 0)
     {
         // match (move diag)
         if (i > 0 && j > 0 && word1[i - 1] == word2[j - 1] && matrix[i][j] == matrix[i - 1][j - 1])
         {
-            // можна додавати 'M' якщо потрібно, але нам не потрібно виводити матчі
             i--; j--;
         }
         // substitution
@@ -122,12 +121,10 @@ vector<Op> backtrace_ops(const string& word1, const string& word2, const vector<
         }
         else
         {
-            // резервний вихід (не повинно статися)
             break;
         }
     }
 
-    // перевернемо порядок — отримаємо операції у прямому порядку
     reverse(ops_rev.begin(), ops_rev.end());
     return ops_rev;
 }
@@ -183,7 +180,6 @@ int levenshtein_index(string word1, string word2)
     cout << word1_lenght << "  " << word2_lenght << "\n";
 
     vector<vector<int>> matrix(word1_lenght+1, vector<int> (word2_lenght+1));
-    //vector<coordinates> reverse;
 
     for (int j = 0; j <= word1_lenght; j++)
     {
@@ -217,12 +213,16 @@ int levenshtein_index(string word1, string word2)
 
 void levenshtein_realisation(string word1, string word2)
 {
+    auto start = std::chrono::high_resolution_clock::now();
     int index = 0;
     //add string transformation
     index = levenshtein_index(word1, word2);
     cout << "final index: " << index << "\n";
 
-    
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
 
+    cout << "Time taken: " << duration.count() << " seconds\n";
+    
     return;
 }
